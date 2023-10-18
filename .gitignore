@@ -1,0 +1,16 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+config.yaml
+*.ipynb
+
+rp_parquet/
+*.parquet
+*.csv
+*.pdf
+*.html
+*.log
+*.tex
+
+*_files

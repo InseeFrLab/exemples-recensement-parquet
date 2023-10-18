@@ -1,0 +1,72 @@
+```{ojs}
+pyramide_ages = db.query(
+`
+SELECT
+  CAST(SUM(IPONDI) AS INT) AS individus,
+  CAST(AGED AS INT) AS AGED,
+  DEPT AS departement
+FROM table_individu
+  WHERE DEPT IN ('11', '31', '34')
+GROUP BY AGED, DEPT ORDER BY DEPT, AGED
+`
+)
+Inputs.table(pyramide_ages)
+```
+
+```{ojs}
+Plot.plot({
+  x: {label: null},
+  y: {percent: true},
+  marks: [
+    Plot.barY(
+        pyramide_ages,
+        {x: "AGED", y: d => d.individus/1000, fy: 'departement', fill: "departement"}
+        ),
+    Plot.ruleX([18], {stroke: "red"}),
+    Plot.tickY(
+        pyramide_ages,
+        {x: "AGED", y: d => d.individus/1000, fy: 'departement'}
+        ),
+    Plot.ruleY([0]),
+    Plot.axisY({label: "Population (en milliers)"}),
+    Plot.axisX({ticks: d3.ticks(0, 120, 10), label: "Âge", fontSize: 12})
+  ]
+})
+```
+
+
+```{{ojs}}
+pyramide_ages = db.query(
+`
+SELECT
+  CAST(SUM(IPONDI) AS INT) AS individus,
+  CAST(AGED AS INT) AS AGED,
+  DEPT AS departement
+FROM table_individu
+  WHERE DEPT IN ('11', '31', '34')
+GROUP BY AGED, DEPT ORDER BY DEPT, AGED
+`
+)
+Inputs.table(pyramide_ages)
+```
+
+```{{ojs}}
+Plot.plot({
+  x: {label: null},
+  y: {percent: true},
+  marks: [
+    Plot.barY(
+        pyramide_ages,
+        {x: "AGED", y: d => d.individus/1000, fy: 'departement', fill: "departement"}
+        ),
+    Plot.ruleX([18], {stroke: "red"}),
+    Plot.tickY(
+        pyramide_ages,
+        {x: "AGED", y: d => d.individus/1000, fy: 'departement'}
+        ),
+    Plot.ruleY([0]),
+    Plot.axisX({label: "Population (en milliers)"}),
+    Plot.axisX({ticks: d3.ticks(0, 120, 10), label: "Âge", fontSize: 12})
+  ]
+})
+```

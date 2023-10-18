@@ -1,0 +1,13 @@
+```{{ojs}}
+Inputs.table(
+    db.query("SELECT * FROM table_logement USING SAMPLE 5")
+)
+```
+
+```{ojs}
+//| echo: false
+Inputs.table(
+    db.query("SELECT * FROM table_logement USING SAMPLE 5")
+)
+```
+

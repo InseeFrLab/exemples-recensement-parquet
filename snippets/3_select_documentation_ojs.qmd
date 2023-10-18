@@ -1,0 +1,16 @@
+```{{ojs}}
+query = "SELECT * FROM documentation WHERE CONTAINS(description_variable, 'Catégorie')"
+Inputs.table(
+    db.query(query)
+)
+```
+
+```{ojs}
+//| echo: false
+query = "SELECT * FROM documentation WHERE CONTAINS(description_variable, 'Catégorie')"
+Inputs.table(
+    db.query(query)
+)
+```
+
+

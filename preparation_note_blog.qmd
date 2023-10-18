@@ -1,0 +1,654 @@
+---
+title: Guide d'utilisation des données du recensement de la population au format `Parquet`
+#jupyter: python3
+#embed-resources: true
+code-annotations: true
+date: 2023-10-18
+bibliography: reference.bib
+format:
+  html: default
+---
+
+Ce guide présente quelques exemples d'utilisation des données du 
+recensement de la population diffusées au format `Parquet`. 
+
+Pour plus d'informations sur le format `Parquet`, dans un contexte
+de statistique publique, se référer à @dondon-lamarche-2023. Pour
+un exemple sur la différence entre format `CSV` et `Parquet`
+illustré sur les données du recensement de la population, voir @mauviere-2022.
+
+Ce guide propose d'utiliser [`DuckDB`](https://duckdb.org/) à travers
+plusieurs langages pour effectuer des traitements sur les fichiers
+détails du recensement. Par rapport à d'autres approches, [`DuckDB`](https://duckdb.org/) a été choisi pour son efficacité ainsi que pour son universalité.
+
+L'ensemble des codes utilisés pour produire cette note
+est disponible sur le
+dépôt [`Github` InseeFrLab/exemples-recensement-parquet](https://github.com/InseeFrLab/exemples-recensement-parquet)
+au format [`Quarto Markdown`](https://quarto.org/).
+
+
+::: {.callout-note}
+Ce _post_ accompagne la mise à disposition des données
+du recensement de la population au format `Parquet`
+sur le site [insee.fr](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890).
+
+Il vise à fournir
+une expérience plus ergonomique et des exemples supplémentaires liés
+au langage `Javascript` au guide PDF disponible sur la page du site
+[insee.fr](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890)
+:::
+
+
+# Initialisation
+
+Les données sont disponibles sur le site `insee.fr` aux adresses suivantes:
+
+* [Fichier détail individuel](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890)
+* [Fichier détail logement](https://www.insee.fr/fr/statistiques/7705908?sommaire=7637890)
+
+
+Ces fichiers peuvent être téléchargés et dézippés manuellement.
+Dans la suite de ce guide, il sera fait l'hypothèse
+que les données sont stockées dans un même dossier
+et qu'il existe une variable _ad hoc_ enregistrant ce chemin 
+dans `Python` ou `R`. A la fin de ce _post_,
+plus de détails justifiant ce choix
+techniques sont disponibles.
+
+::: {.callout-danger collapse="true"}
+## Chemins des données pour les exemples `Observable` 
+Pour que les exemples fournis avec `Observable` par le biais
+de `Quarto` soient fonctionnels, les données doivent être stockées
+dans un dossier enfant du répertoire de travail. Le chemin à indiquer
+est donc relatif à celui-ci. 
+:::
+
+
+::: {.panel-tabset group="language"}
+
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+```{{ojs}}
+path_data = 'C:/MesDocuments/dossierpersonnel'
+// remplacer par l'emplacement où sont stockées 
+// les données
+```
+
+
+## `Python` {.unnumbered .unlisted}
+
+```python
+path_data = 'C:/MesDocuments/dossierpersonnel'
+# remplacer par l'emplacement où sont stockées 
+# les données
+```
+
+## `R` {.unnumbered .unlisted}
+
+```r
+path_data <- 'C:/MesDocuments/dossierpersonnel'
+# remplacer par l'emplacement où sont stockées 
+# les données
+```
+
+:::
+
+Il est proposé, pour initialiser la connexion entre
+les données `Parquet` et le langage
+client (`Javascript`, `R` ou `Python`)
+d'utiliser des vues. Ceci permet de faire référence de manière
+répétée à la même source de données par le biais d'un
+alias (`table_logement` ou `table_individu`).
+
+
+::: {.panel-tabset group="language"}
+
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/1_create_db_ojs.qmd >}}
+
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/1_create_db_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/1_create_db_r.qmd >}}
+
+:::
+
+Pour rapidement avoir une idée des informations présentes dans ces données,
+le code ci-dessous peut être utilisé :
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/2_select_schema_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/2_select_schema_r.qmd >}}
+
+```python
+#| echo: false
+#| output: true
+schema_table_individu = duckdb.sql(
+  "SELECT * FROM documentation"
+  ).to_df()
+schema_table_individu.head(2)
+```
+
+:::
+
+```python
+#| eval: false
+#| echo: false
+import pandas as pd
+ojs_define(
+  documentation_raw = schema_table_individu,
+  path_data = path_data
+  )
+```
+
+```python
+//| eval: false
+documentation = transpose(documentation_raw)
+```
+
+
+
+Pour découvrir les informations présentes dans la base,
+il est possible d'utiliser les fonctions pré-implémentées
+de `DuckDB` pour la [manipulation de données textuelles](https://duckdb.org/docs/sql/functions/char.html).
+Par exemple, pour 
+extraire toutes les modalités des variables dont la description contient le terme _"catégorie"_:
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/3_select_documentation_python.qmd >}}
+
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/3_select_documentation_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+duckdb.sql("SELECT * FROM documentation WHERE CONTAINS(description_variable, 'Catégorie')")
+```
+
+Cette approche peut permettre de récupérer les modalités d'une variable.
+Dans cette base de données, les valeurs `Z` sont à part.
+Il est possible d'avoir du détail sur celles-ci avec la requête suivante :
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/4_selectz_python.qmd >}}
+
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/4_selectz_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+duckdb.sql(
+  "SELECT * FROM documentation WHERE CONTAINS(code_modalite, 'Z')"
+)
+```
+
+# Lecture et affichage de quelques valeurs
+
+Pour visualiser un nombre limité de valeurs, par exemple 5,
+deux approches sont possibles :
+
+- Sélectionner un échantillon restreint sur les premières lignes du `Parquet`, par exemple les 5 premières lignes ;
+- Sélectionner un échantillon aléatoire.
+
+Pour les premières lignes, la commande à utiliser est `LIMIT`.
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/5_limit_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/5_limit_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+#| output: true
+duckdb.sql("SELECT * FROM table_logement LIMIT 5")
+```
+
+Pour un échantillon aléatoire, la commande à utiliser est `USING SAMPLE`.
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/5_sample_python.qmd >}}
+
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/5_sample_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+# Echantillon aléatoire
+duckdb.sql("SELECT * FROM table_logement USING SAMPLE 5")
+```
+
+# Sélectionner des observations ou des variables
+
+## Requêtes sur les colonnes (`SELECT`)
+
+La liste des colonnes à extraire du fichier peut être renseignée avec la clause `SELECT`.
+Celles-ci peuvent être renommées en appliquant au passage la clause `AS`.
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/6_sample_columns_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/6_sample_columns_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+duckdb.sql("SELECT IPONDI as poids, AGED, VOIT FROM table_individu LIMIT 10")
+```
+
+`DuckDB` propose également des fonctionnalités pour extraire
+des colonnes à travers des [expressions régulières](https://fr.wikipedia.org/wiki/Expression_r%C3%A9guli%C3%A8re). 
+De nombreux exemples peuvent être trouvés sur [cette page](https://duckdb.org/2023/08/23/even-friendlier-sql.html).
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/7_use_regex_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/7_use_regex_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+duckdb.sql("SELECT IPONDI AS poids, COLUMNS('.*AGE.*') FROM table_individu LIMIT 10")
+```
+
+## Requêtes sur les lignes (`WHERE`)
+
+Pour extraire un sous-échantillon des données complètes, la clause
+`WHERE` permet d'appliquer des filtres à partir de conditions
+logiques. 
+Par exemple, il est possible de ne conserver, du fichier national, que les données de l'Aude (11), 
+de la Haute-Garonne (31) et de l'Hérault (34). 
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/8_filter_dpts_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/8_filter_dpts_r.qmd >}}
+
+:::
+
+Il est également possible de formater cette liste telle qu'attendue par SQL 
+à partir d'une liste `Python` ou d'un vecteur `R` plus classique.
+Pour cela, le code suivant
+peut servir de modèle :
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/8_filter_regions_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/8_filter_regions_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+duckdb.sql("SELECT * FROM table_individu WHERE DEPT IN ('11', '31', '34')")
+```
+
+```{python}
+#| echo: false
+#| output: false
+liste_regions = ["1", "2", "3"]
+liste_regions_sql = ", ".join([f"'{dep}'" for dep in liste_regions])
+duckdb.sql(f"SELECT * FROM table_individu WHERE DEPT IN ({liste_regions_sql})")
+```
+
+Les filtres sur les observations peuvent être faits à partir de critères
+sur plusieurs colonnes. Par exemple, pour ne conserver que les observations
+de la ville de Nice où la date d'emménagement est postérieure à 2020, 
+la requête suivante peut être utilisée :
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/8_filter_dates_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/8_filter_dates_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+query = "SELECT * FROM table_logement WHERE COMMUNE = '06088' and AEMM > 2020"
+duckdb.sql(query)
+```
+
+# Statistiques agrégées
+
+Le langage `SQL` permet d'exécuter de manière très efficace
+des requêtes complexes afin de construire, à partir de 
+données fines, des statistiques agrégées. 
+
+Cette partie illustre d'abord ceci avec deux exemples de statistiques agrégées renvoyant une unique statistique :
+
+- Extraire la liste des codes arrondissements de Paris, Lyon, Marseille où au moins une personne a été recensée ;
+- Reproduire l'exemple de @mauviere-2022 permettant de calculer le nombre d'habitants de Toulouse qui ont changé de logement en un an ; 
+
+Ensuite, des statistiques plus fines sont construites par le biais
+d'agrégations par groupe :
+
+- Calculer le nombre de personnes recensées par cohorte pour
+les départements de l'Aude (11), de la Haute-Garonne (31) et
+de l'Hérault (34) ; 
+- Calculer le nombre de centenaires recensés par département.
+
+La fonction
+`DISTINCT` appliquée à la variable `ARM` 
+permet d'extraire la liste des codes arrondissements
+présents dans la base de données.
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/9_distinct_arrondissements_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/9_distinct_arrondissements_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+query = "SELECT DISTINCT(ARM) FROM table_logement WHERE NOT CONTAINS(ARM, 'ZZZZZ') ORDER BY ARM"
+duckdb.sql(query)
+```
+
+Il est possible d'extraire des statistiques beaucoup plus raffinées
+par le biais d'une requête SQL plus complexe. Par exemple pour calculer
+le nombre d'habitants de Toulouse qui ont changé de logement en un an:
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+```python
+query = \
+"""
+SELECT CAST(
+  SUM(IPONDL*CAST(INPER AS INT)) AS INT
+) AS habitants_toulouse_demenagement
+FROM table_logement
+WHERE COMMUNE == '31555' AND IRANM NOT IN ('1', 'Z') AND INPER != 'Y'
+"""
+duckdb.sql(query).df()
+```
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/10_use_cast_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+#| label: exemple-mauviere
+query = \
+"""
+SELECT CAST(
+  SUM(IPONDL*CAST(INPER AS INT)) AS INT
+) AS habitants_toulouse_demenagement
+FROM table_logement
+WHERE COMMUNE == '31555' AND IRANM NOT IN ('1', 'Z') AND INPER != 'Y'
+"""
+duckdb.sql(query).df()
+```
+
+Pour représenter la pyramide des âges recensés
+dans ces trois départements, il est possible
+de procéder en deux étapes
+
+- Effectuer une agrégation par le biais de `DuckDB`
+et transformer ces résultats sous forme de _dataframe_
+- Utiliser ce _dataframe_ avec un _package_ d'analyse
+graphique pour représenter la pyramide des âges.
+
+
+
+::: {.callout-note}
+Pour illustrer le parallélisme possible entre les codes
+`R` et `Python`, l'exemple de représentation graphique ci-dessus s'appuie sur
+le _package_ `plotnine` - 
+dont la syntaxe reproduit celle du _package_ `R` `ggplot2`, plutôt que sur
+`matplotlib` ou `seaborn`. 
+:::
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/11_pyramide_ages_python.qmd >}}
+
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/11_pyramide_ages_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+pyramide_ages = duckdb.sql(
+"""
+SELECT
+  SUM(IPONDI) AS individus,
+  AGED,
+  DEPT AS departement
+FROM table_individu
+  WHERE DEPT IN ('11', '31', '34')
+GROUP BY AGED, DEPT ORDER BY DEPT, AGED
+"""
+)
+```
+
+```{python}
+#| eval: false
+#| echo: false
+
+import matplotlib.pyplot as plt
+from plotnine import *
+
+pyramide_ages = pyramide_ages.to_df()
+(
+    ggplot(pyramide_ages, aes(x = "AGED", y = "individus")) +
+    geom_bar(
+      aes(fill = "departement"),
+      stat = "identity", show_legend=False
+    ) +
+    geom_vline(xintercept = 18, color = "grey", linetype = "dashed") +
+    facet_wrap('departement', scales = "free_y", nrow = 3) +
+    theme_minimal() +
+    labs(y = "Individus recensés", x = "Âge")
+)
+```
+
+![Un exemple de représentation graphique produite à partir du recensement de la population](pyramide_rp.png)
+
+
+
+Si on s'intéresse plus spécifiquement au nombre de centenaires
+recensés par département et qu'on désire classer ces derniers par 
+ordre décroissant.
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/12_centenaires_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/12_centenaires_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+duckdb.sql(
+"""
+SELECT
+  COUNT(*) AS individus_recenses,
+  DEPT
+FROM table_individu
+  WHERE AGED >= 100
+GROUP BY DEPT
+ORDER BY individus_recenses DESC
+"""
+)
+```
+
+
+# Associer à d'autres sources de données
+
+Le [_code officiel géographique_ (COG)](https://www.insee.fr/fr/information/6800675)
+est utile pour illuster l'ajout d'information annexe. 
+Le code commune va être utilisé pour associer les deux bases
+de données. Cette variable porte des noms différents dans les
+deux bases, ce qui n'est pas un problème. 
+
+Il est proposé, ci-dessous, de télécharger les données
+de manière reproductible, via une fonction adaptée
+(ici à travers le _package_ `requests` pour `Python` ou via `download.file` en `R`).
+Bien que `DuckDB` permette l'import direct
+depuis un _url_, ceci implique l'installation en amont
+de l'[extension `httpfs`](https://duckdb.org/docs/extensions/httpfs.html). 
+
+L'association de sources de données passe généralement par un `JOIN`. Pour illustrer
+cette clause, il est possible d'associer les agrégats de la table logement
+à un niveau communal avec celles du COG grâce au code commune. 
+
+
+
+::: {.panel-tabset group="language"}
+
+## `Python` {.unnumbered .unlisted}
+
+{{< include snippets/13_autres_sources_python.qmd >}}
+
+## `R` {.unnumbered .unlisted} 
+
+{{< include snippets/13_autres_sources_r.qmd >}}
+
+:::
+
+```{python}
+#| echo: false
+import requests
+import os
+
+url_cog = "https://www.insee.fr/fr/statistiques/fichier/6800675/v_commune_2023.csv"
+if os.path.exists("cog.csv") is False:
+  response = requests.get(url_cog)
+  with open("cog.csv", mode="wb") as file:
+      file.write(response.content)
+```
+
+```{python}
+#| echo: false
+duckdb.sql('CREATE OR REPLACE VIEW cog2023 AS SELECT * FROM read_csv_auto("cog.csv", header=true)')
+```
+
+```{python}
+#| echo: false
+duckdb.sql(
+"""
+SELECT cog2023.NCCENR, CAST(SUM(table_logement.IPONDL) AS INT) AS recenses
+FROM table_logement
+LEFT OUTER JOIN cog2023 ON table_logement.COMMUNE = cog2023.COM
+GROUP BY cog2023.NCCENR
+ORDER BY recenses;
+"""
+)
+```
+
+## Références
