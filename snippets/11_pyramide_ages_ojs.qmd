@@ -1,16 +1,21 @@
-```{{ojs}}
-//| echo: false
-Plot = require("https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.11/dist/plot.umd.min.js")
-```
+::: {.callout-caution collapse="true"}
+## Version de `Plot` embarquée dans `Quarto`
 
-::: {.callout-note}
 Pour les versions de `Quarto` antérieures à la v1.4, la version embarquée par défaut
 de la librairie `Plot` ne propose pas d'interactivité par le
 biais des [_tooltips_](https://observablehq.com/plot/marks/tip).
 :::
 
 ```{{ojs}}
-//| echo: false
+Plot = require("https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.11/dist/plot.umd.min.js")
+```
+
+<details>
+<summary>
+Code pour structurer les données pour la représentation graphique.
+</summary>
+
+```{{ojs}}
 pyramide_ages = db.query(
 `
 SELECT
@@ -25,10 +30,14 @@ GROUP BY AGED, DEPT ORDER BY DEPT, AGED
 Inputs.table(pyramide_ages)
 ```
 
+</details>
+
+<details>
+<summary>
+Code pour produire la représentation graphique.
+</summary>
 
 ```{{ojs}}
-//| echo: false
-//| fig-cap: Un exemple de représentation graphique produite à partir du recensement de la population
 Plot.plot({
   x: {label: null},
   y: {percent: true},
@@ -48,3 +57,4 @@ Plot.plot({
   ]
 })
 ```
+</details>

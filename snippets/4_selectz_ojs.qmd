@@ -2,7 +2,14 @@
 Inputs.table(
   db.query(
     "SELECT * FROM documentation WHERE CONTAINS(code_modalite, 'Z')"
-  )
+  ),
+  {
+    columns: [
+      "nom_variable","code_modalite",
+      "description_modalite", "description_variable",
+      "type_variable"
+      ]
+  }
 )
 ```
 

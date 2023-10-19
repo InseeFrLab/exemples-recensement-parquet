@@ -5,6 +5,7 @@ title: Guide d'utilisation des données du recensement de la population au forma
 code-annotations: true
 date: 2023-10-18
 bibliography: reference.bib
+toc: true
 format:
   html: default
 ---
@@ -19,7 +20,10 @@ illustré sur les données du recensement de la population, voir @mauviere-2022.
 
 Ce guide propose d'utiliser [`DuckDB`](https://duckdb.org/) à travers
 plusieurs langages pour effectuer des traitements sur les fichiers
-détails du recensement. Par rapport à d'autres approches, [`DuckDB`](https://duckdb.org/) a été choisi pour son efficacité ainsi que pour son universalité.
+détails du recensement.
+Par rapport à d'autres approches, [`DuckDB`](https://duckdb.org/) a été choisi pour son efficacité ainsi que pour son universalité[^notealternative].
+
+[^notealternative]: Des propositions d'enrichissements de cette documentation à partir d'implémentations alternatives, par exemple s'appuyant sur `Arrow` et `dbplyr` ou sur `Polars` sont bienvenues sur le [Github InseeFrLab/exemples-recensement-parquet].
 
 L'ensemble des codes utilisés pour produire cette note
 est disponible sur le
@@ -75,7 +79,7 @@ sur le site [insee.fr](https://www.insee.fr/fr/statistiques/7706119?sommaire=763
 Il vise à fournir
 une expérience plus ergonomique et des exemples supplémentaires liés
 au langage `Javascript` au guide PDF disponible sur la page du site
-[insee.fr](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890)
+[insee.fr](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890).
 :::
 
 
@@ -83,20 +87,19 @@ au langage `Javascript` au guide PDF disponible sur la page du site
 
 Les données sont disponibles sur le site `insee.fr` aux adresses suivantes:
 
-* [Fichier détail individuel](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890)
-* [Fichier détail logement](https://www.insee.fr/fr/statistiques/7705908?sommaire=7637890)
+* [Fichier détail individuel](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890) ;
+* [Fichier détail logement](https://www.insee.fr/fr/statistiques/7705908?sommaire=7637890).
 
 
-Ces fichiers peuvent être téléchargés et dézippés manuellement.
-Dans la suite de ce guide, il sera fait l'hypothèse
+Ces fichiers doivent être téléchargés et dézippés manuellement.
+Dans la suite de ce guide, il sera fait l'hypothèse 
 que les données sont stockées dans un même dossier
 et qu'il existe une variable _ad hoc_ enregistrant ce chemin 
-dans `Python` ou `R`. A la fin de ce _post_,
-plus de détails justifiant ce choix
-techniques sont disponibles.
+dans `Python` ou `R`.
 
-::: {.callout-danger collapse="true"}
+::: {.callout-caution collapse="true"}
 ## Chemins des données pour les exemples `Observable` 
+
 Pour que les exemples fournis avec `Observable` par le biais
 de `Quarto` soient fonctionnels, les données doivent être stockées
 dans un dossier enfant du répertoire de travail. Le chemin à indiquer
@@ -145,8 +148,13 @@ alias (`table_logement` ou `table_individu`).
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
+<details>
+<summary>
+Dérouler pour découvrir le code <code>Observable</code> d'initiatialisation de la base de
+données avec <code>DuckDB</code>
+</summary>
 {{< include snippets/1_create_db_ojs.qmd >}}
-
+</details>
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -251,7 +259,14 @@ Il est possible d'avoir du détail sur celles-ci avec la requête suivante :
 Inputs.table(
   db.query(
     "SELECT * FROM documentation WHERE CONTAINS(code_modalite, 'Z')"
-  )
+  ),
+  {
+    columns: [
+      "nom_variable","code_modalite",
+      "description_modalite", "description_variable",
+      "type_variable"
+      ]
+  }
 )
 ```
 
@@ -293,6 +308,12 @@ Inputs.table(
 
 Pour un échantillon aléatoire, la commande à utiliser est `USING SAMPLE`.
 
+```{ojs}
+//| echo: false
+Inputs.table(
+    db.query("SELECT * FROM table_logement USIN SAMPLE 5")
+)
+```
 
 
 ::: {.panel-tabset group="language"}
@@ -689,16 +710,18 @@ ordre décroissant.
 
 ```{ojs}
 //| echo: false
-db.query(
-`
-SELECT
-  SUM(IPONDI) AS individus_recenses,
-  DEPT
-FROM table_individu
-  WHERE AGED >= 100
-GROUP BY DEPT
-ORDER BY individus_recenses DESC
-`
+Inputs.table(
+  db.query(
+  `
+  SELECT
+    SUM(IPONDI) AS individus_recenses,
+    DEPT
+  FROM table_individu
+    WHERE AGED >= 100
+  GROUP BY DEPT
+  ORDER BY individus_recenses DESC
+  `
+  )
 )
 ```
 
@@ -728,7 +751,46 @@ cette clause, il est possible d'associer les agrégats de la table logement
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
-__A venir__
+La lecture directe depuis `Observable`
+du fichier par le biais du protocole `https` vers
+le site de l'Insee
+ne fonctionnant pas,
+il est recommandé de télécharger en amont le fichier
+par l'intermédiaire de `Python` ou de `R`.
+
+<details>
+<summary>
+Code <code>Python</code> pour récupérer le code officiel géographique
+</summary>
+
+```python
+import requests
+import os
+
+url_cog = "https://www.insee.fr/fr/statistiques/fichier/6800675/v_commune_2023.csv"
+if os.path.exists("cog.csv") is False:
+  response = requests.get(url_cog)
+  with open("cog.csv", mode="wb") as file:
+      file.write(response.content)
+```
+
+</details>
+
+<details>
+<summary>
+Code <code>R</code> pour récupérer le code officiel géographique
+</summary>
+
+```r
+url <- "https://www.insee.fr/fr/statistiques/fichier/6800675/v_commune_2023.csv"
+download.file(url, "cog.csv")
+```
+
+</details>
+
+
+
+
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -740,5 +802,41 @@ __A venir__
 
 :::
 
+```{ojs}
+//| echo: false
+proxy = "https://corsproxy.io/?"
+url_cog = "https://www.insee.fr/fr/statistiques/fichier/6800675/v_commune_2023.csv"
+db2 = {
+  const configuredClient = await db ;
+  await configuredClient.query(
+    `
+    CREATE OR REPLACE VIEW cog2023 AS
+    SELECT * FROM read_csv_auto('${proxy + url_cog}', header = true)
+    `
+    )
+
+  return configuredClient ;
+
+}
+
+
+```
+
+
+
+```{ojs}
+//| echo: false
+Inputs.table(
+  db2.query(
+    `
+    SELECT cog2023.NCCENR, CAST(SUM(table_logement.IPONDL) AS INT) AS recenses
+    FROM table_logement
+    LEFT OUTER JOIN cog2023 ON table_logement.COMMUNE = cog2023.COM
+    GROUP BY cog2023.NCCENR
+    ORDER BY recenses;
+    `
+  )  
+)
+```
 
 ## Références
