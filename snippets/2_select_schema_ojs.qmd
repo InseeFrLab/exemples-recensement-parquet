@@ -5,10 +5,3 @@ schema_table_individu = db.query(
 Inputs.table(schema_table_individu)
 ```
 
-```{ojs}
-//| echo: false
-schema_table_individu = db.query(
-  "SELECT * FROM documentation"
-  )
-Inputs.table(schema_table_individu)
-```

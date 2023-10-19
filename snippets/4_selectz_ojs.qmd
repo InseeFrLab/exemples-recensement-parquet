@@ -6,12 +6,5 @@ Inputs.table(
 )
 ```
 
-```{ojs}
-//| echo: false
-Inputs.table(
-  db.query(
-    "SELECT * FROM documentation WHERE CONTAINS(code_modalite, 'Z')"
-  )
-)
-```
+
 

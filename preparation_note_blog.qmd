@@ -27,6 +27,46 @@ dépôt [`Github` InseeFrLab/exemples-recensement-parquet](https://github.com/In
 au format [`Quarto Markdown`](https://quarto.org/).
 
 
+<details>
+<summary>Afficher le dictionnaire des variables</summary>
+
+Il est possible de rechercher
+dans la documentation des noms de variables ou des informations dans les descriptions. 
+Lorsqu'une variable présente de nombreuses modalités, seules la première est la dernière
+sont
+retournées. Un exemple ci-dessous montre comment utiliser une requête SQL pour
+récupérer l'ensemble des valeurs d'une telle variable. 
+
+
+```{ojs}
+//| echo: false
+viewof unique_description_filter = Inputs.search(
+  documentation, {
+    placeholder: "Trouver une information dans la documentation"
+  }
+  )
+```
+
+```{ojs}
+//| echo: false
+table_filtre_description = Inputs.table(
+  unique_description_filter,
+  {
+    header: {
+      description_variable: "Description de la variable"
+    }    
+  }
+)
+```
+
+```{ojs}
+//| echo: false
+documentation = db.query(`SELECT * FROM documentation`)
+```
+
+
+</details>
+
 ::: {.callout-note}
 Ce _post_ accompagne la mise à disposition des données
 du recensement de la population au format `Parquet`
@@ -110,7 +150,7 @@ alias (`table_logement` ou `table_individu`).
 
 ## `Python` {.unnumbered .unlisted}
 
-{{< include snippets/1_create_db_python.qmd >}}
+{{< include snippets/1_create_db_python_md.qmd >}}
 
 ## `R` {.unnumbered .unlisted} 
 
@@ -125,6 +165,10 @@ le code ci-dessous peut être utilisé :
 
 ::: {.panel-tabset group="language"}
 
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/2_select_schema_ojs.qmd >}}
+
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/2_select_schema_python.qmd >}}
@@ -133,32 +177,15 @@ le code ci-dessous peut être utilisé :
 
 {{< include snippets/2_select_schema_r.qmd >}}
 
-```python
-#| echo: false
-#| output: true
-schema_table_individu = duckdb.sql(
-  "SELECT * FROM documentation"
-  ).to_df()
-schema_table_individu.head(2)
-```
-
 :::
 
-```python
-#| eval: false
-#| echo: false
-import pandas as pd
-ojs_define(
-  documentation_raw = schema_table_individu,
-  path_data = path_data
+```{ojs}
+//| echo: false
+schema_table_individu = db.query(
+  "SELECT * FROM documentation"
   )
+Inputs.table(schema_table_individu)
 ```
-
-```python
-//| eval: false
-documentation = transpose(documentation_raw)
-```
-
 
 
 Pour découvrir les informations présentes dans la base,
@@ -171,6 +198,12 @@ extraire toutes les modalités des variables dont la description contient le ter
 
 ::: {.panel-tabset group="language"}
 
+
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/3_select_documentation_ojs.qmd >}}
+
+
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/3_select_documentation_python.qmd >}}
@@ -182,9 +215,12 @@ extraire toutes les modalités des variables dont la description contient le ter
 
 :::
 
-```{python}
-#| echo: false
-duckdb.sql("SELECT * FROM documentation WHERE CONTAINS(description_variable, 'Catégorie')")
+```{ojs}
+//| echo: false
+query = "SELECT * FROM documentation WHERE CONTAINS(description_variable, 'Catégorie')"
+Inputs.table(
+    db.query(query)
+)
 ```
 
 Cette approche peut permettre de récupérer les modalités d'une variable.
@@ -194,6 +230,10 @@ Il est possible d'avoir du détail sur celles-ci avec la requête suivante :
 
 
 ::: {.panel-tabset group="language"}
+
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/4_selectz_ojs.qmd >}}
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -206,10 +246,12 @@ Il est possible d'avoir du détail sur celles-ci avec la requête suivante :
 
 :::
 
-```{python}
-#| echo: false
-duckdb.sql(
-  "SELECT * FROM documentation WHERE CONTAINS(code_modalite, 'Z')"
+```{ojs}
+//| echo: false
+Inputs.table(
+  db.query(
+    "SELECT * FROM documentation WHERE CONTAINS(code_modalite, 'Z')"
+  )
 )
 ```
 
@@ -227,6 +269,11 @@ Pour les premières lignes, la commande à utiliser est `LIMIT`.
 
 ::: {.panel-tabset group="language"}
 
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/5_limit_ojs.qmd >}}
+
+
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/5_limit_python.qmd >}}
@@ -237,10 +284,11 @@ Pour les premières lignes, la commande à utiliser est `LIMIT`.
 
 :::
 
-```{python}
-#| echo: false
-#| output: true
-duckdb.sql("SELECT * FROM table_logement LIMIT 5")
+```{ojs}
+//| echo: false
+Inputs.table(
+    db.query("SELECT * FROM table_logement LIMIT 5")
+)
 ```
 
 Pour un échantillon aléatoire, la commande à utiliser est `USING SAMPLE`.
@@ -248,6 +296,10 @@ Pour un échantillon aléatoire, la commande à utiliser est `USING SAMPLE`.
 
 
 ::: {.panel-tabset group="language"}
+
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/5_sample_ojs.qmd >}}
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -260,10 +312,11 @@ Pour un échantillon aléatoire, la commande à utiliser est `USING SAMPLE`.
 
 :::
 
-```{python}
-#| echo: false
-# Echantillon aléatoire
-duckdb.sql("SELECT * FROM table_logement USING SAMPLE 5")
+```{ojs}
+//| echo: false
+Inputs.table(
+    db.query("SELECT * FROM table_logement USING SAMPLE 5")
+)
 ```
 
 # Sélectionner des observations ou des variables
@@ -277,6 +330,10 @@ Celles-ci peuvent être renommées en appliquant au passage la clause `AS`.
 
 ::: {.panel-tabset group="language"}
 
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/6_sample_columns_ojs.qmd >}}
+
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/6_sample_columns_python.qmd >}}
@@ -287,9 +344,11 @@ Celles-ci peuvent être renommées en appliquant au passage la clause `AS`.
 
 :::
 
-```{python}
-#| echo: false
-duckdb.sql("SELECT IPONDI as poids, AGED, VOIT FROM table_individu LIMIT 10")
+```{ojs}
+//| echo: false
+Inputs.table(
+    db.query("SELECT IPONDI AS poids, AGED, VOIT FROM table_individu LIMIT 10")
+)
 ```
 
 `DuckDB` propose également des fonctionnalités pour extraire
@@ -299,6 +358,10 @@ De nombreux exemples peuvent être trouvés sur [cette page](https://duckdb.org/
 
 
 ::: {.panel-tabset group="language"}
+
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/7_use_regex_ojs.qmd >}}
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -310,9 +373,11 @@ De nombreux exemples peuvent être trouvés sur [cette page](https://duckdb.org/
 
 :::
 
-```{python}
-#| echo: false
-duckdb.sql("SELECT IPONDI AS poids, COLUMNS('.*AGE.*') FROM table_individu LIMIT 10")
+```{ojs}
+//| echo: false
+Inputs.table(
+    db.query("SELECT IPONDI AS poids, COLUMNS('.*AGE.*') FROM table_individu LIMIT 10")
+)
 ```
 
 ## Requêtes sur les lignes (`WHERE`)
@@ -327,6 +392,11 @@ de la Haute-Garonne (31) et de l'Hérault (34).
 
 ::: {.panel-tabset group="language"}
 
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/8_filter_dpts_ojs.qmd >}}
+
+
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/8_filter_dpts_python.qmd >}}
@@ -337,6 +407,15 @@ de la Haute-Garonne (31) et de l'Hérault (34).
 
 :::
 
+
+```{ojs}
+//| echo: false
+Inputs.table(
+    db.query("SELECT * FROM table_individu WHERE DEPT IN ('11', '31', '34') LIMIT 10")
+)
+```
+
+
 Il est également possible de formater cette liste telle qu'attendue par SQL 
 à partir d'une liste `Python` ou d'un vecteur `R` plus classique.
 Pour cela, le code suivant
@@ -345,6 +424,11 @@ peut servir de modèle :
 
 
 ::: {.panel-tabset group="language"}
+
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/8_filter_regions_ojs.qmd >}}
+
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -356,17 +440,13 @@ peut servir de modèle :
 
 :::
 
-```{python}
-#| echo: false
-duckdb.sql("SELECT * FROM table_individu WHERE DEPT IN ('11', '31', '34')")
-```
-
-```{python}
-#| echo: false
-#| output: false
-liste_regions = ["1", "2", "3"]
-liste_regions_sql = ", ".join([f"'{dep}'" for dep in liste_regions])
-duckdb.sql(f"SELECT * FROM table_individu WHERE DEPT IN ({liste_regions_sql})")
+```{ojs}
+//| echo: false
+liste_regions = ["11", "31", "34"]
+liste_regions_sql = liste_regions.map(item => `'${item}'`).join(",")
+Inputs.table(
+    db.query(`SELECT * FROM table_individu WHERE DEPT IN (${liste_regions_sql}) LIMIT 10`)
+)
 ```
 
 Les filtres sur les observations peuvent être faits à partir de critères
@@ -378,6 +458,11 @@ la requête suivante peut être utilisée :
 
 ::: {.panel-tabset group="language"}
 
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/8_filter_dates_ojs.qmd >}}
+
+
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/8_filter_dates_python.qmd >}}
@@ -388,10 +473,13 @@ la requête suivante peut être utilisée :
 
 :::
 
-```{python}
-#| echo: false
-query = "SELECT * FROM table_logement WHERE COMMUNE = '06088' and AEMM > 2020"
-duckdb.sql(query)
+```{ojs}
+//| echo: false
+Inputs.table(
+    db.query(
+        "SELECT * FROM table_logement WHERE COMMUNE = '06088' and AEMM > 2020"
+    )
+)
 ```
 
 # Statistiques agrégées
@@ -422,6 +510,10 @@ présents dans la base de données.
 
 ::: {.panel-tabset group="language"}
 
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/9_distinct_arrondissements_ojs.qmd >}}
+
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/9_distinct_arrondissements_python.qmd >}}
@@ -432,10 +524,13 @@ présents dans la base de données.
 
 :::
 
-```{python}
-#| echo: false
-query = "SELECT DISTINCT(ARM) FROM table_logement WHERE NOT CONTAINS(ARM, 'ZZZZZ') ORDER BY ARM"
-duckdb.sql(query)
+```{ojs}
+//| echo: false
+Inputs.table(
+    db.query(
+        "SELECT DISTINCT(ARM) FROM table_logement WHERE NOT CONTAINS(ARM, 'ZZZZZ') ORDER BY ARM"
+    )
+)
 ```
 
 Il est possible d'extraire des statistiques beaucoup plus raffinées
@@ -445,6 +540,11 @@ le nombre d'habitants de Toulouse qui ont changé de logement en un an:
 
 
 ::: {.panel-tabset group="language"}
+
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/10_use_cast_ojs.qmd >}}
+
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -466,18 +566,19 @@ duckdb.sql(query).df()
 
 :::
 
-```{python}
-#| echo: false
-#| label: exemple-mauviere
-query = \
-"""
-SELECT CAST(
-  SUM(IPONDL*CAST(INPER AS INT)) AS INT
-) AS habitants_toulouse_demenagement
-FROM table_logement
-WHERE COMMUNE == '31555' AND IRANM NOT IN ('1', 'Z') AND INPER != 'Y'
-"""
-duckdb.sql(query).df()
+```{ojs}
+//| echo: false
+Inputs.table(
+  db.query(
+    `
+    SELECT CAST(
+      SUM(IPONDL*CAST(INPER AS INT)) AS INT
+    ) AS habitants_toulouse_demenagement
+    FROM table_logement
+    WHERE COMMUNE == '31555' AND IRANM NOT IN ('1', 'Z') AND INPER != 'Y'
+    `
+  )
+)
 ```
 
 Pour représenter la pyramide des âges recensés
@@ -503,6 +604,11 @@ dont la syntaxe reproduit celle du _package_ `R` `ggplot2`, plutôt que sur
 
 ::: {.panel-tabset group="language"}
 
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/11_pyramide_ages_ojs.qmd >}}
+
+
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/11_pyramide_ages_python.qmd >}}
@@ -514,53 +620,62 @@ dont la syntaxe reproduit celle du _package_ `R` `ggplot2`, plutôt que sur
 
 :::
 
-```{python}
-#| echo: false
-pyramide_ages = duckdb.sql(
-"""
+```{ojs}
+//| echo: false
+Plot = require("https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.11/dist/plot.umd.min.js")
+```
+
+```{ojs}
+//| echo: false
+pyramide_ages = db.query(
+`
 SELECT
-  SUM(IPONDI) AS individus,
-  AGED,
+  CAST(SUM(IPONDI) AS INT) AS individus,
+  CAST(AGED AS INT) AS AGED,
   DEPT AS departement
 FROM table_individu
   WHERE DEPT IN ('11', '31', '34')
 GROUP BY AGED, DEPT ORDER BY DEPT, AGED
-"""
+`
 )
+Inputs.table(pyramide_ages)
 ```
 
-```{python}
-#| eval: false
-#| echo: false
 
-import matplotlib.pyplot as plt
-from plotnine import *
-
-pyramide_ages = pyramide_ages.to_df()
-(
-    ggplot(pyramide_ages, aes(x = "AGED", y = "individus")) +
-    geom_bar(
-      aes(fill = "departement"),
-      stat = "identity", show_legend=False
-    ) +
-    geom_vline(xintercept = 18, color = "grey", linetype = "dashed") +
-    facet_wrap('departement', scales = "free_y", nrow = 3) +
-    theme_minimal() +
-    labs(y = "Individus recensés", x = "Âge")
-)
+```{ojs}
+//| echo: false
+//| fig-cap: Un exemple de représentation graphique produite à partir du recensement de la population
+Plot.plot({
+  x: {label: null},
+  y: {percent: true},
+  marks: [
+    Plot.barY(
+        pyramide_ages,
+        {x: "AGED", y: d => d.individus/1000, fy: 'departement', fill: "departement", tip: true}
+        ),
+    Plot.ruleX([18], {stroke: "red"}),
+    Plot.tickY(
+        pyramide_ages,
+        {x: "AGED", y: d => d.individus/1000, fy: 'departement'}
+        ),
+    Plot.ruleY([0]),
+    Plot.axisY({label: "Population (en milliers)"}),
+    Plot.axisX({ticks: d3.ticks(0, 120, 10), label: "Âge", fontSize: 12})
+  ]
+})
 ```
-
-![Un exemple de représentation graphique produite à partir du recensement de la population](pyramide_rp.png)
-
 
 
 Si on s'intéresse plus spécifiquement au nombre de centenaires
 recensés par département et qu'on désire classer ces derniers par 
 ordre décroissant.
 
-
-
 ::: {.panel-tabset group="language"}
+
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+{{< include snippets/12_centenaires_ojs.qmd >}}
+
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -572,18 +687,18 @@ ordre décroissant.
 
 :::
 
-```{python}
-#| echo: false
-duckdb.sql(
-"""
+```{ojs}
+//| echo: false
+db.query(
+`
 SELECT
-  COUNT(*) AS individus_recenses,
+  SUM(IPONDI) AS individus_recenses,
   DEPT
 FROM table_individu
   WHERE AGED >= 100
 GROUP BY DEPT
 ORDER BY individus_recenses DESC
-"""
+`
 )
 ```
 
@@ -611,6 +726,9 @@ cette clause, il est possible d'associer les agrégats de la table logement
 
 ::: {.panel-tabset group="language"}
 
+## `Observable` via `Quarto` {.unnumbered .unlisted}
+
+
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/13_autres_sources_python.qmd >}}
@@ -621,7 +739,7 @@ cette clause, il est possible d'associer les agrégats de la table logement
 
 :::
 
-```{python}
+```python
 #| echo: false
 import requests
 import os
@@ -633,12 +751,12 @@ if os.path.exists("cog.csv") is False:
       file.write(response.content)
 ```
 
-```{python}
+```python
 #| echo: false
 duckdb.sql('CREATE OR REPLACE VIEW cog2023 AS SELECT * FROM read_csv_auto("cog.csv", header=true)')
 ```
 
-```{python}
+```python
 #| echo: false
 duckdb.sql(
 """

@@ -1,4 +1,16 @@
-```{ojs}
+```{{ojs}}
+//| echo: false
+Plot = require("https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.11/dist/plot.umd.min.js")
+```
+
+::: {.callout-note}
+Pour les versions de `Quarto` antérieures à la v1.4, la version embarquée par défaut
+de la librairie `Plot` ne propose pas d'interactivité par le
+biais des [_tooltips_](https://observablehq.com/plot/marks/tip).
+:::
+
+```{{ojs}}
+//| echo: false
 pyramide_ages = db.query(
 `
 SELECT
@@ -13,14 +25,17 @@ GROUP BY AGED, DEPT ORDER BY DEPT, AGED
 Inputs.table(pyramide_ages)
 ```
 
-```{ojs}
+
+```{{ojs}}
+//| echo: false
+//| fig-cap: Un exemple de représentation graphique produite à partir du recensement de la population
 Plot.plot({
   x: {label: null},
   y: {percent: true},
   marks: [
     Plot.barY(
         pyramide_ages,
-        {x: "AGED", y: d => d.individus/1000, fy: 'departement', fill: "departement"}
+        {x: "AGED", y: d => d.individus/1000, fy: 'departement', fill: "departement", tip: true}
         ),
     Plot.ruleX([18], {stroke: "red"}),
     Plot.tickY(
@@ -29,43 +44,6 @@ Plot.plot({
         ),
     Plot.ruleY([0]),
     Plot.axisY({label: "Population (en milliers)"}),
-    Plot.axisX({ticks: d3.ticks(0, 120, 10), label: "Âge", fontSize: 12})
-  ]
-})
-```
-
-
-```{{ojs}}
-pyramide_ages = db.query(
-`
-SELECT
-  CAST(SUM(IPONDI) AS INT) AS individus,
-  CAST(AGED AS INT) AS AGED,
-  DEPT AS departement
-FROM table_individu
-  WHERE DEPT IN ('11', '31', '34')
-GROUP BY AGED, DEPT ORDER BY DEPT, AGED
-`
-)
-Inputs.table(pyramide_ages)
-```
-
-```{{ojs}}
-Plot.plot({
-  x: {label: null},
-  y: {percent: true},
-  marks: [
-    Plot.barY(
-        pyramide_ages,
-        {x: "AGED", y: d => d.individus/1000, fy: 'departement', fill: "departement"}
-        ),
-    Plot.ruleX([18], {stroke: "red"}),
-    Plot.tickY(
-        pyramide_ages,
-        {x: "AGED", y: d => d.individus/1000, fy: 'departement'}
-        ),
-    Plot.ruleY([0]),
-    Plot.axisX({label: "Population (en milliers)"}),
     Plot.axisX({ticks: d3.ticks(0, 120, 10), label: "Âge", fontSize: 12})
   ]
 })
