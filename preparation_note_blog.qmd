@@ -23,7 +23,7 @@ plusieurs langages pour effectuer des traitements sur les fichiers
 détails du recensement.
 Par rapport à d'autres approches, [`DuckDB`](https://duckdb.org/) a été choisi pour son efficacité ainsi que pour son universalité[^notealternative].
 
-[^notealternative]: Des propositions d'enrichissements de cette documentation à partir d'implémentations alternatives, par exemple s'appuyant sur `Arrow` et `dbplyr` ou sur `Polars` sont bienvenues sur le [Github InseeFrLab/exemples-recensement-parquet].
+[^notealternative]: Des propositions d'enrichissements de cette documentation à partir d'implémentations alternatives, par exemple s'appuyant sur `Arrow` et `dbplyr` ou sur `Polars` sont bienvenues sur le [Github InseeFrLab/exemples-recensement-parquet](https://github.com/InseeFrLab/exemples-recensement-parquet).
 
 L'ensemble des codes utilisés pour produire cette note
 est disponible sur le

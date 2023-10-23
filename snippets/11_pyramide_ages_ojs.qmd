@@ -4,11 +4,15 @@
 Pour les versions de `Quarto` antérieures à la v1.4, la version embarquée par défaut
 de la librairie `Plot` ne propose pas d'interactivité par le
 biais des [_tooltips_](https://observablehq.com/plot/marks/tip).
-:::
+
+Pour utiliser une version compatible, par exemple la `0.6.11`, faire:
 
 ```{{ojs}}
 Plot = require("https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.11/dist/plot.umd.min.js")
 ```
+
+:::
+
 
 <details>
 <summary>
