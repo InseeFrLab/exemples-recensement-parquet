@@ -1,4 +1,8 @@
 ```{{ojs}}
+url_table_logement = "https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-logements-ordinaires-en-2020-1/20231023-123618/fd-logemt-2020.parquet"
+url_table_individu = "https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet"
+url_doc = "https://www.data.gouv.fr/fr/datasets/r/8a287ffb-7614-4b47-9cfa-7990ce89e1ce"
+
 renommage_documentation = `SELECT 
   COD_VAR AS nom_variable, 
   LIB_VAR AS description_variable, 
@@ -7,27 +11,23 @@ renommage_documentation = `SELECT
   LIB_MOD AS description_modalite`
 
 db = {
-  const configuredClient = await DuckDBClient.of({
-    logements: FileAttachment("rp_parquet/FD_LOGEMT_2020.parquet"),
-    doc: {
-        file: FileAttachment("rp_parquet/dictionnaire_variables_2019.csv"),
-        header: true
-    }
-  });
+  const configuredClient = await DuckDBClient.of();
 
   await configuredClient.query(`
     CREATE OR REPLACE VIEW table_individu 
-    AS SELECT * FROM read_parquet("https://www.data.gouv.fr/fr/datasets/r/31c015e6-9c16-4baf-8084-152d6aab2812")`
+    AS SELECT *
+    FROM read_parquet('${url_table_individu}')`
   ) ;
 
   await configuredClient.query(`
     CREATE OR REPLACE VIEW table_logement 
-    AS SELECT * FROM read_parquet("https://www.data.gouv.fr/fr/datasets/r/f2767d2c-0eb3-448b-b8ed-7f10c44c3441")`
+    AS SELECT *
+    FROM read_parquet('${url_table_logement}')`
   ) ;
 
   await configuredClient.query(`
     CREATE OR REPLACE VIEW documentation 
-    AS ${renommage_documentation} FROM doc`
+    AS ${renommage_documentation} FROM read_csv_auto('${url_doc}', header=true)`
   ) ;
 
   return configuredClient
@@ -36,6 +36,10 @@ db = {
 
 ```{ojs}
 //| echo: false
+url_table_logement = "https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet"
+url_table_individu = "https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet"
+url_doc = "https://www.data.gouv.fr/fr/datasets/r/8a287ffb-7614-4b47-9cfa-7990ce89e1ce"
+
 renommage_documentation = `SELECT 
   COD_VAR AS nom_variable, 
   LIB_VAR AS description_variable, 
@@ -44,27 +48,23 @@ renommage_documentation = `SELECT
   LIB_MOD AS description_modalite`
 
 db = {
-  const configuredClient = await DuckDBClient.of({
-    logements: FileAttachment("rp_parquet/FD_LOGEMT_2020.parquet"),
-    doc: {
-        file: FileAttachment("rp_parquet/dictionnaire_variables_2019.csv"),
-        header: true
-    }
-  });
+  const configuredClient = await DuckDBClient.of();
 
   await configuredClient.query(`
     CREATE OR REPLACE VIEW table_individu 
-    AS SELECT * FROM read_parquet("https://www.data.gouv.fr/fr/datasets/r/31c015e6-9c16-4baf-8084-152d6aab2812")`
+    AS SELECT *
+    FROM read_parquet('${url_table_individu}')`
   ) ;
 
   await configuredClient.query(`
     CREATE OR REPLACE VIEW table_logement 
-    AS SELECT * FROM read_parquet("https://www.data.gouv.fr/fr/datasets/r/f2767d2c-0eb3-448b-b8ed-7f10c44c3441")`
+    AS SELECT *
+    FROM read_parquet('${url_table_logement}')`
   ) ;
 
   await configuredClient.query(`
     CREATE OR REPLACE VIEW documentation 
-    AS ${renommage_documentation} FROM doc`
+    AS ${renommage_documentation} FROM read_csv_auto('${url_doc}', header=true)`
   ) ;
 
   return configuredClient
