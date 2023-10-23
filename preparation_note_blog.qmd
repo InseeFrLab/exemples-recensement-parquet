@@ -85,37 +85,39 @@ au langage `Javascript` au guide PDF disponible sur la page du site
 
 # Initialisation
 
-Les données sont disponibles sur le site `insee.fr` aux adresses suivantes:
+Les données sont disponibles sur le site `data.gouv` aux adresses suivantes:
 
 * [Fichier détail individuel](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890) ;
 * [Fichier détail logement](https://www.insee.fr/fr/statistiques/7705908?sommaire=7637890).
 
 
-Ces fichiers doivent être téléchargés et dézippés manuellement.
 Dans la suite de ce guide, il sera fait l'hypothèse 
 que les données sont stockées dans un même dossier
 et qu'il existe une variable _ad hoc_ enregistrant ce chemin 
 dans `Python` ou `R`.
 
-::: {.callout-caution collapse="true"}
-## Chemins des données pour les exemples `Observable` 
-
-Pour que les exemples fournis avec `Observable` par le biais
-de `Quarto` soient fonctionnels, les données doivent être stockées
-dans un dossier enfant du répertoire de travail. Le chemin à indiquer
-est donc relatif à celui-ci. 
-:::
 
 
 ::: {.panel-tabset group="language"}
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
-```{{ojs}}
-path_data = 'C:/MesDocuments/dossierpersonnel'
-// remplacer par l'emplacement où sont stockées 
-// les données
-```
+::: {.callout-caution collapse="true"}
+## Emplacement des données pour les exemples `Observable` 
+
+En ce qui concerne `Observable`, il est proposé
+d'utiliser directement l'URL de mise à disposition
+des fichiers car l'extension `httpfs` 
+est nativement intégrée à la librairie `DuckDB`, 
+_a contrario_ des clients `Python` et `R`
+
+Ces jeux de données sont automatiquement téléchargés par le
+navigateur et mis en _cache_ pour accélérer des utilisations
+ultérieures de la page. Le premier chargement de tous
+les tableaux et graphiques sur celle-ci
+peut ainsi prendre un peu plus de temps. 
+
+:::
 
 
 ## `Python` {.unnumbered .unlisted}

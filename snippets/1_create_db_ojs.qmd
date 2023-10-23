@@ -8,7 +8,6 @@ renommage_documentation = `SELECT
 
 db = {
   const configuredClient = await DuckDBClient.of({
-    individus: FileAttachment(`rp_parquet/FD_INDCVI_2020.parquet`),
     logements: FileAttachment("rp_parquet/FD_LOGEMT_2020.parquet"),
     doc: {
         file: FileAttachment("rp_parquet/dictionnaire_variables_2019.csv"),
@@ -18,12 +17,12 @@ db = {
 
   await configuredClient.query(`
     CREATE OR REPLACE VIEW table_individu 
-    AS SELECT * FROM individus`
+    AS SELECT * FROM read_parquet("https://www.data.gouv.fr/fr/datasets/r/31c015e6-9c16-4baf-8084-152d6aab2812")`
   ) ;
 
   await configuredClient.query(`
     CREATE OR REPLACE VIEW table_logement 
-    AS SELECT * FROM logements`
+    AS SELECT * FROM read_parquet("https://www.data.gouv.fr/fr/datasets/r/f2767d2c-0eb3-448b-b8ed-7f10c44c3441")`
   ) ;
 
   await configuredClient.query(`
