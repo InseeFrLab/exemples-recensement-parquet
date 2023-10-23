@@ -92,10 +92,14 @@ Les données sont disponibles sur le site `data.gouv` aux adresses suivantes:
 
 
 Dans la suite de ce guide, il sera fait l'hypothèse 
-que les données sont stockées dans un même dossier
+pour `Python` et `R`
+que les données sont récupérées depuis les URL stables,
+enregistrées dans un même dossier
 et qu'il existe une variable _ad hoc_ enregistrant ce chemin 
-dans `Python` ou `R`.
-
+dans `Python` ou `R`. 
+En ce qui concerne `Observable`, il est proposé
+d'utiliser directement l'URL de mise à disposition
+des fichiers. 
 
 
 ::: {.panel-tabset group="language"}
@@ -103,13 +107,18 @@ dans `Python` ou `R`.
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
 ::: {.callout-caution collapse="true"}
+
+Les URL stables de mise à dispositon des
+données seront directement renseignées dans 
+la création de la base de données. 
+
 ## Emplacement des données pour les exemples `Observable` 
 
 En ce qui concerne `Observable`, il est proposé
 d'utiliser directement l'URL de mise à disposition
 des fichiers car l'extension `httpfs` 
 est nativement intégrée à la librairie `DuckDB`, 
-_a contrario_ des clients `Python` et `R`
+_a contrario_ des clients `Python` et `R`.
 
 Ces jeux de données sont automatiquement téléchargés par le
 navigateur et mis en _cache_ pour accélérer des utilisations
@@ -118,7 +127,6 @@ les tableaux et graphiques sur celle-ci
 peut ainsi prendre un peu plus de temps. 
 
 :::
-
 
 ## `Python` {.unnumbered .unlisted}
 
