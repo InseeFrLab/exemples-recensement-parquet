@@ -1,3 +1,5 @@
+
+
 ```{python}
 #| echo: true
 import duckdb
@@ -12,15 +14,15 @@ renommage_documentation = "SELECT " +\
 
 duckdb.sql(
     'CREATE OR REPLACE VIEW table_individu ' +\
-    f'AS SELECT * FROM read_parquet("{path_data}/FD_INDCVI_2020.parquet")'
+    f'AS SELECT * FROM read_parquet("FD_INDCVI_2020.parquet")'
     )
 duckdb.sql(
     'CREATE OR REPLACE VIEW table_logement ' +\
-    f'AS SELECT * FROM read_parquet("{path_data}/FD_LOGEMT_2020.parquet")'
+    f'AS SELECT * FROM read_parquet("FD_LOGEMT_2020.parquet")'
     )
 duckdb.sql(
     'CREATE OR REPLACE VIEW documentation ' +\
     f'AS {renommage_documentation} ' +\
-    f'FROM read_csv_auto("{path_data}/dictionnaire_variables_2019.csv", header=true)'
+    f'FROM read_csv_auto("dictionnaire_variables_logemt_2020.csv", header=true)'
     )
 ```

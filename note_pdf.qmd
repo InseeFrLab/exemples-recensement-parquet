@@ -6,7 +6,6 @@ code-annotations: true
 date: 2023-10-18
 bibliography: reference.bib
 format:
-  html: default
   pdf:
     toc: false
     number-depth: 2
@@ -43,7 +42,10 @@ L'ensemble des codes utilisés pour produire cette note
 est disponible sur le
 dépôt [`Github` InseeFrLab/exemples-recensement-parquet](https://github.com/InseeFrLab/exemples-recensement-parquet)
 au format [`Quarto Markdown`](https://quarto.org/).
-
+Une version plus plus ergonomique et présentant des éléments
+complémentaires (`DuckDB` par le biais d'`Observable` et `Quarto`, visualisations réactives),
+est disponible sur le blog
+du [réseau des _data scientists_ de la statistique publique](https://ssphub.netlify.app/post/parquetrp/).
 
 ::: {.callout-note}
 Cette note au format `PDF` présente de manière linéaire les exemples de 
@@ -60,45 +62,39 @@ publiée sur le [blog du SSP Hub](https://ssphub.netlify.app/post/parquetrp/).
 
 # Initialisation
 
-Les données sont disponibles sur le site `insee.fr` aux adresses suivantes:
+Les pages d'informations sur les données, où sont notamment disponibles
+la documentation de celles-ci,
+se retrouvent sur le site `insee.fr` aux adresses suivantes:
 
 * [Fichier détail individuel](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890)
 * [Fichier détail logement](https://www.insee.fr/fr/statistiques/7705908?sommaire=7637890)
 
+Ces pages présentent aussi les données détaillées au format `CSV`. Néanmoins, le format `Parquet` 
+est plus intéressant pour le traitement de celles-ci comme expliqué 
+par @dondon-lamarche-2023. Les données au format `Parquet` sont mises à disposition sur 
+le site `data.gouv` aux adresses suivantes:
 
-```{python}
-#| echo: false
-import yaml
+* [Fichier détail individuel](https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1)
+* [Fichier détail logement](https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1)
 
-with open("config.yaml", 'r') as stream:
-    config = yaml.safe_load(stream)
-    
-path_data = config["path_data"]
-```
 
-Ces fichiers peuvent être téléchargés et dézippés manuellement.
+Ces fichiers peuvent être téléchargés par la biais de `Python`
+ou de `R`.
 Dans la suite de ce guide, il sera fait l'hypothèse
-que les données sont stockées dans un même dossier
-et qu'il existe une variable _ad hoc_ enregistrant ce chemin 
-dans `Python` ou `R`.
+que les données sont téléchargées par le biais du code
+ci-dessous et
+stockées dans le dossier de travail utilisé par 
+`Python` ou `R`.
 
 \bigskip
 
 __Exemple `Python`__ 
 
-```python
-path_data = 'C:/MesDocuments/dossierpersonnel'
-# remplacer par l'emplacement où sont stockées 
-# les données
-```
+{{< include snippets/0_download_data_python.qmd >}}
 
 __Exemple `R`__
 
-```r
-path_data <- 'C:/MesDocuments/dossierpersonnel'
-# remplacer par l'emplacement où sont stockées 
-# les données
-```
+{{< include snippets/0_download_data_r.qmd >}}
 
 \bigskip
 
@@ -147,8 +143,7 @@ schema_table_individu.head(2)
 #| echo: false
 import pandas as pd
 ojs_define(
-  documentation_raw = schema_table_individu,
-  path_data = path_data
+  documentation_raw = schema_table_individu
   )
 ```
 
