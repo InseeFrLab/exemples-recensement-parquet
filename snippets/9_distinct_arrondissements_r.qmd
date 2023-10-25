@@ -1,5 +1,5 @@
 ```r
-query <- glue(
+query <- glue_sql(
     "SELECT DISTINCT(ARM) ",
     "FROM table_logement ",
     "WHERE NOT CONTAINS(ARM, 'ZZZZZ') ",
