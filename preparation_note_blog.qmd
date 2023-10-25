@@ -36,8 +36,6 @@ Par rapport à d'autres approches, [`DuckDB`](https://duckdb.org/) a été chois
 [^notealternative]: Des propositions d'enrichissements de cette documentation à partir d'implémentations alternatives, par exemple s'appuyant sur `Arrow` et `dbplyr` ou sur `Polars` sont bienvenues sur le [Github InseeFrLab/exemples-recensement-parquet](https://github.com/InseeFrLab/exemples-recensement-parquet).
 
 
-
-
 <details>
 <summary>Afficher le dictionnaire des variables</summary>
 
@@ -52,7 +50,7 @@ récupérer l'ensemble des valeurs d'une telle variable.
 ```{ojs}
 //| echo: false
 viewof unique_description_filter = Inputs.search(
-  documentation, {
+  documentation_indiv, {
     placeholder: "Trouver une information dans la documentation"
   }
   )
@@ -72,7 +70,7 @@ table_filtre_description = Inputs.table(
 
 ```{ojs}
 //| echo: false
-documentation = db.query(`SELECT * FROM documentation`)
+documentation_indiv = db.query(`SELECT * FROM documentation_indiv`)
 ```
 
 
@@ -100,7 +98,7 @@ grâce à l'optimisation permise par `DuckDB`.
 
 # Initialisation
 
-Les données sont disponibles sur le site `data.gouv` aux adresses suivantes:
+Les données sont disponibles sur le site `data.gouv` aux adresses suivantes :
 
 * [Fichier détail individuel](https://www.insee.fr/fr/statistiques/7706119?sommaire=7637890) ;
 * [Fichier détail logement](https://www.insee.fr/fr/statistiques/7705908?sommaire=7637890).
@@ -176,7 +174,7 @@ alias (`table_logement` ou `table_individu`).
 
 <details>
 <summary>
-Dérouler pour découvrir le code <code>Observable</code> d'initiatialisation de la base de
+Dérouler pour découvrir le code <code>Observable</code> d'initialisation de la base de
 données avec <code>DuckDB</code>
 </summary>
 {{< include snippets/1_create_db_ojs.qmd >}}
@@ -216,7 +214,7 @@ le code ci-dessous peut être utilisé :
 ```{ojs}
 //| echo: false
 schema_table_individu = db.query(
-  "SELECT * FROM documentation"
+  "SELECT * FROM documentation_indiv"
   )
 Inputs.table(schema_table_individu)
 ```
@@ -226,8 +224,7 @@ Pour découvrir les informations présentes dans la base,
 il est possible d'utiliser les fonctions pré-implémentées
 de `DuckDB` pour la [manipulation de données textuelles](https://duckdb.org/docs/sql/functions/char.html).
 Par exemple, pour 
-extraire toutes les modalités des variables dont la description contient le terme _"catégorie"_:
-
+extraire toutes les modalités des variables dont la description contient le terme _"catégorie"_ :
 
 
 ::: {.panel-tabset group="language"}
@@ -251,7 +248,7 @@ extraire toutes les modalités des variables dont la description contient le ter
 
 ```{ojs}
 //| echo: false
-query = "SELECT * FROM documentation WHERE CONTAINS(description_variable, 'Catégorie')"
+query = "SELECT * FROM documentation_indiv WHERE CONTAINS(description_variable, 'Catégorie')"
 Inputs.table(
     db.query(query)
 )
@@ -260,7 +257,6 @@ Inputs.table(
 Cette approche peut permettre de récupérer les modalités d'une variable.
 Dans cette base de données, les valeurs `Z` sont à part.
 Il est possible d'avoir du détail sur celles-ci avec la requête suivante :
-
 
 
 ::: {.panel-tabset group="language"}
@@ -284,7 +280,7 @@ Il est possible d'avoir du détail sur celles-ci avec la requête suivante :
 //| echo: false
 Inputs.table(
   db.query(
-    "SELECT * FROM documentation WHERE CONTAINS(code_modalite, 'Z')"
+    "SELECT * FROM documentation_indiv WHERE CONTAINS(code_modalite, 'Z')"
   ),
   {
     columns: [
@@ -307,13 +303,11 @@ deux approches sont possibles :
 Pour les premières lignes, la commande à utiliser est `LIMIT`.
 
 
-
 ::: {.panel-tabset group="language"}
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
 {{< include snippets/5_limit_ojs.qmd >}}
-
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -374,7 +368,6 @@ La liste des colonnes à extraire du fichier peut être renseignée avec la clau
 Celles-ci peuvent être renommées en appliquant au passage la clause `AS`.
 
 
-
 ::: {.panel-tabset group="language"}
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
@@ -401,7 +394,6 @@ Inputs.table(
 `DuckDB` propose également des fonctionnalités pour extraire
 des colonnes à travers des [expressions régulières](https://fr.wikipedia.org/wiki/Expression_r%C3%A9guli%C3%A8re). 
 De nombreux exemples peuvent être trouvés sur [cette page](https://duckdb.org/2023/08/23/even-friendlier-sql.html).
-
 
 
 ::: {.panel-tabset group="language"}
@@ -436,13 +428,11 @@ Par exemple, il est possible de ne conserver, du fichier national, que les donn�
 de la Haute-Garonne (31) et de l'Hérault (34). 
 
 
-
 ::: {.panel-tabset group="language"}
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
 {{< include snippets/8_filter_dpts_ojs.qmd >}}
-
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -469,13 +459,11 @@ Pour cela, le code suivant
 peut servir de modèle :
 
 
-
 ::: {.panel-tabset group="language"}
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
 {{< include snippets/8_filter_regions_ojs.qmd >}}
-
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -502,13 +490,11 @@ de la ville de Nice où la date d'emménagement est postérieure à 2020,
 la requête suivante peut être utilisée :
 
 
-
 ::: {.panel-tabset group="language"}
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
 {{< include snippets/8_filter_dates_ojs.qmd >}}
-
 
 ## `Python` {.unnumbered .unlisted}
 
@@ -554,7 +540,6 @@ permet d'extraire la liste des codes arrondissements
 présents dans la base de données.
 
 
-
 ::: {.panel-tabset group="language"}
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
@@ -585,27 +570,15 @@ par le biais d'une requête SQL plus complexe. Par exemple pour calculer
 le nombre d'habitants de Toulouse qui ont changé de logement en un an:
 
 
-
 ::: {.panel-tabset group="language"}
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
 {{< include snippets/10_use_cast_ojs.qmd >}}
 
-
 ## `Python` {.unnumbered .unlisted}
 
-```python
-query = \
-"""
-SELECT CAST(
-  SUM(IPONDL*CAST(INPER AS INT)) AS INT
-) AS habitants_toulouse_demenagement
-FROM table_logement
-WHERE COMMUNE == '31555' AND IRANM NOT IN ('1', 'Z') AND INPER != 'Y'
-"""
-duckdb.sql(query).df()
-```
+{{< include snippets/10_use_cast_python.qmd >}}
 
 ## `R` {.unnumbered .unlisted} 
 
@@ -638,7 +611,6 @@ et transformer ces résultats sous forme de _dataframe_
 graphique pour représenter la pyramide des âges.
 
 
-
 ::: {.callout-note}
 Pour illustrer le parallélisme possible entre les codes
 `R` et `Python`, l'exemple de représentation graphique ci-dessus s'appuie sur
@@ -648,18 +620,15 @@ dont la syntaxe reproduit celle du _package_ `R` `ggplot2`, plutôt que sur
 :::
 
 
-
 ::: {.panel-tabset group="language"}
 
 ## `Observable` via `Quarto` {.unnumbered .unlisted}
 
 {{< include snippets/11_pyramide_ages_ojs.qmd >}}
 
-
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/11_pyramide_ages_python.qmd >}}
-
 
 ## `R` {.unnumbered .unlisted} 
 
@@ -673,7 +642,6 @@ Pour utiliser une version compatible, par exemple la `0.6.11`, faire:
 //| echo: false
 Plot = require("https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.11/dist/plot.umd.min.js")
 ```
-
 
 
 ```{ojs}
@@ -728,7 +696,6 @@ ordre décroissant.
 
 {{< include snippets/12_centenaires_ojs.qmd >}}
 
-
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/12_centenaires_python.qmd >}}
@@ -775,7 +742,6 @@ de l'[extension `httpfs`](https://duckdb.org/docs/extensions/httpfs.html).
 L'association de sources de données passe généralement par un `JOIN`. Pour illustrer
 cette clause, il est possible d'associer les agrégats de la table logement
 à un niveau communal avec celles du COG grâce au code commune. 
-
 
 
 ::: {.panel-tabset group="language"}
@@ -825,8 +791,6 @@ une base de données intégrant le code officiel géographique:
 
 {{< include snippets/13_autres_sources_ojs.qmd >}}
 
-
-
 ## `Python` {.unnumbered .unlisted}
 
 {{< include snippets/13_autres_sources_python.qmd >}}
@@ -853,11 +817,9 @@ db2 = {
   return configuredClient ;
 
 }
-
-
 ```
 
-Les données du code officiel géographique présentent l'aspect suivant:
+Les données du code officiel géographique présentent l'aspect suivant :
 
 ```{ojs}
 //| code-fold: true
@@ -868,7 +830,7 @@ Inputs.table(
 ```
 
 Voici par exemple le résultat d'une fusion
-avec une agrégation produite à la volée sur la table logement:
+avec une agrégation produite à la volée sur la table logement :
 
 
 ```{ojs}
