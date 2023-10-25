@@ -455,8 +455,7 @@ Inputs.table(
 
 Il est également possible de formater cette liste telle qu'attendue par SQL 
 à partir d'une liste `Python` ou d'un vecteur `R` plus classique.
-Pour cela, le code suivant
-peut servir de modèle :
+Pour cela, le code suivant peut servir de modèle :
 
 
 ::: {.panel-tabset group="language"}
@@ -483,6 +482,12 @@ Inputs.table(
     db.query(`SELECT * FROM table_individu WHERE DEPT IN (${liste_regions_sql}) LIMIT 10`)
 )
 ```
+
+Pour en savoir plus sur les _prepared statements_ avec DuckDB en Python,
+et plus généralement pour avoir des exemples d'utilisations différentes,
+c'est [ici](https://duckdb.org/docs/api/python/dbapi.html) que ça se passe.
+
+<br>
 
 Les filtres sur les observations peuvent être faits à partir de critères
 sur plusieurs colonnes. Par exemple, pour ne conserver que les observations
