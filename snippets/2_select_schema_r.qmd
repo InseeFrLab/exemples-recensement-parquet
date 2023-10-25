@@ -3,11 +3,11 @@ schema_table_individu <- dbGetQuery(
   con,
   "SELECT * FROM documentation_indiv"
 )
-print(schema_table_individu)
+print(head(schema_table_individu))
 
 schema_table_logement <- dbGetQuery(
   con,
   "SELECT * FROM documentation_logement"
 )
-print(schema_table_logement)
+print(head(schema_table_logement))
 ```

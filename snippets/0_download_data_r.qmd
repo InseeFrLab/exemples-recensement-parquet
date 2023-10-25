@@ -13,9 +13,9 @@ if (!file.exists("FD_INDCVI_2020.parquet")){
     download.file(url_table_individu, "FD_INDCVI_2020.parquet")
 }
 if (!file.exists("dictionnaire_variables_logemt_2020.csv")){
-    download.file(url_doc, "dictionnaire_variables_logemt_2020.csv")
+    download.file(url_doc_logement, "dictionnaire_variables_logemt_2020.csv")
 }
 if (!file.exists("dictionnaire_variables_indcvi_2020.csv")){
-    download.file(url_doc, "dictionnaire_variables_indcvi_2020.csv")
+    download.file(url_doc_individu, "dictionnaire_variables_indcvi_2020.csv")
 }
 ```

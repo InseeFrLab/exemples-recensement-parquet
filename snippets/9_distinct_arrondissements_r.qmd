@@ -3,7 +3,8 @@ query <- glue_sql(
     "SELECT DISTINCT(ARM) ",
     "FROM table_logement ",
     "WHERE NOT CONTAINS(ARM, 'ZZZZZ') ",
-    "ORDER BY ARM"
+    "ORDER BY ARM",
+    .con=con
 )
 dbGetQuery(con, query)
 ```
