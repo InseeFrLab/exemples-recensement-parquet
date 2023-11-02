@@ -133,7 +133,7 @@ __Exemple `R`__
 #| echo: false
 #| output: true
 schema_table_individu = duckdb.sql(
-  "SELECT * FROM documentation"
+  "SELECT * FROM documentation_indiv"
   ).to_df()
 schema_table_individu.head(2)
 ```
@@ -172,7 +172,7 @@ __Exemple `R`__
 
 ```{python}
 #| echo: false
-duckdb.sql("SELECT * FROM documentation WHERE CONTAINS(description_variable, 'Catégorie')")
+duckdb.sql("SELECT * FROM documentation_indiv WHERE CONTAINS(description_variable, 'Catégorie')")
 ```
 
 Cette approche peut permettre de récupérer les modalités d'une variable.
@@ -193,7 +193,7 @@ __Exemple `R`__
 ```{python}
 #| echo: false
 duckdb.sql(
-  "SELECT * FROM documentation WHERE CONTAINS(code_modalite, 'Z')"
+  "SELECT * FROM documentation_indiv WHERE CONTAINS(code_modalite, 'Z')"
 )
 ```
 

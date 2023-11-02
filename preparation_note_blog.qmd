@@ -158,6 +158,14 @@ path_data <- 'C:/MesDocuments/dossierpersonnel'
 # les données
 ```
 
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+```r
+path_data <- 'C:/MesDocuments/dossierpersonnel'
+# remplacer par l'emplacement où sont stockées 
+# les données
+```
+
 :::
 
 Il est proposé, pour initialiser la connexion entre
@@ -188,6 +196,9 @@ données avec <code>DuckDB</code>
 
 {{< include snippets/1_create_db_r.qmd >}}
 
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/1_create_db_r_dbplyr.qmd >}}
 :::
 
 Pour rapidement avoir une idée des informations présentes dans ces données,
@@ -208,6 +219,10 @@ le code ci-dessous peut être utilisé :
 ## `R` {.unnumbered .unlisted} 
 
 {{< include snippets/2_select_schema_r.qmd >}}
+
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/2_select_schema_r_dbplyr.qmd >}}
 
 :::
 
@@ -244,11 +259,15 @@ extraire toutes les modalités des variables dont la description contient le ter
 
 {{< include snippets/3_select_documentation_r.qmd >}}
 
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/3_select_documentation_r_dbplyr.qmd >}}
+
 :::
 
 ```{ojs}
 //| echo: false
-query = "SELECT * FROM documentation_indiv WHERE CONTAINS(description_variable, 'Catégorie')"
+query = "SELECT * FROM documentation_logement WHERE CONTAINS(description_variable, 'Catégorie')"
 Inputs.table(
     db.query(query)
 )
@@ -273,6 +292,10 @@ Il est possible d'avoir du détail sur celles-ci avec la requête suivante :
 ## `R` {.unnumbered .unlisted} 
 
 {{< include snippets/4_selectz_r.qmd >}}
+
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/4_selectz_r_dbplyr.qmd >}}
 
 :::
 
@@ -317,6 +340,10 @@ Pour les premières lignes, la commande à utiliser est `LIMIT`.
 
 {{< include snippets/5_limit_r.qmd >}}
 
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/5_limit_r_dbplyr.qmd >}}
+
 :::
 
 ```{ojs}
@@ -351,6 +378,10 @@ Inputs.table(
 
 {{< include snippets/5_sample_r.qmd >}}
 
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/5_sample_r_dbplyr.qmd >}}
+
 :::
 
 ```{ojs}
@@ -382,6 +413,10 @@ Celles-ci peuvent être renommées en appliquant au passage la clause `AS`.
 
 {{< include snippets/6_sample_columns_r.qmd >}}
 
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/6_sample_columns_r_dbplyr.qmd >}}
+
 :::
 
 ```{ojs}
@@ -409,6 +444,10 @@ De nombreux exemples peuvent être trouvés sur [cette page](https://duckdb.org/
 ## `R` {.unnumbered .unlisted} 
 
 {{< include snippets/7_use_regex_r.qmd >}}
+
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/7_use_regex_r_dbplyr.qmd >}}
 
 :::
 
@@ -442,6 +481,11 @@ de la Haute-Garonne (31) et de l'Hérault (34).
 
 {{< include snippets/8_filter_dpts_r.qmd >}}
 
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/8_filter_dpts_r_dbplyr.qmd >}}
+
+
 :::
 
 
@@ -471,6 +515,10 @@ Pour cela, le code suivant peut servir de modèle :
 ## `R` {.unnumbered .unlisted} 
 
 {{< include snippets/8_filter_regions_r.qmd >}}
+
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/8_filter_regions_r_dbplyr.qmd >}}
 
 :::
 
@@ -508,6 +556,10 @@ la requête suivante peut être utilisée :
 ## `R` {.unnumbered .unlisted} 
 
 {{< include snippets/8_filter_dates_r.qmd >}}
+
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/8_filter_dates_r_dbplyr.qmd >}}
 
 :::
 
@@ -559,6 +611,11 @@ présents dans la base de données.
 
 {{< include snippets/9_distinct_arrondissements_r.qmd >}}
 
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/9_distinct_arrondissements_r_dbplyr.qmd >}}
+
+
 :::
 
 ```{ojs}
@@ -588,6 +645,10 @@ le nombre d'habitants de Toulouse qui ont changé de logement en un an:
 ## `R` {.unnumbered .unlisted} 
 
 {{< include snippets/10_use_cast_r.qmd >}}
+
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/10_use_cast_r_dbplyr.qmd >}}
 
 :::
 
@@ -638,6 +699,10 @@ dont la syntaxe reproduit celle du _package_ `R` `ggplot2`, plutôt que sur
 ## `R` {.unnumbered .unlisted} 
 
 {{< include snippets/11_pyramide_ages_r.qmd >}}
+
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/11_pyramide_ages_r_dbplyr.qmd >}}
 
 :::
 
@@ -708,6 +773,10 @@ ordre décroissant.
 ## `R` {.unnumbered .unlisted} 
 
 {{< include snippets/12_centenaires_r.qmd >}}
+
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/12_centenaires_r_dbplyr.qmd >}}
 
 :::
 
@@ -803,6 +872,10 @@ une base de données intégrant le code officiel géographique:
 ## `R` {.unnumbered .unlisted} 
 
 {{< include snippets/13_autres_sources_r.qmd >}}
+
+## `R (dbplyr)` {.unnumbered .unlisted} 
+
+{{< include snippets/13_autres_sources_r_dbplyr.qmd >}}
 
 :::
 
