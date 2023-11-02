@@ -30,8 +30,8 @@ Ces pages présentent aussi les données détaillées au format `CSV`. Néanmoin
 est plus intéressant pour le traitement de celles-ci. Les données au format `Parquet` sont mises à disposition sur 
 le site `data.gouv` aux adresses suivantes:
 
-* [Fichier détail individuel](https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1)
-* [Fichier détail logement](https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1)
+* [Fichier détail individuel](https://www.data.gouv.fr/fr/datasets/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/)
+* [Fichier détail logement](https://www.data.gouv.fr/fr/datasets/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/)
 
 Ce guide propose d'utiliser [`DuckDB`](https://duckdb.org/) à travers
 plusieurs langages pour effectuer des traitements sur les fichiers
@@ -42,4 +42,4 @@ Par rapport à d'autres approches, [`DuckDB`](https://duckdb.org/) a été chois
 
 ## Contributeurs
 
-Antoine Palazzolo, Lino Galiana
+Antoine Palazzolo, Lino Galiana, Robin Cura
