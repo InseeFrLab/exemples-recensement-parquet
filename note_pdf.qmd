@@ -135,7 +135,7 @@ __Exemple `R`__
 schema_table_individu = duckdb.sql(
   "SELECT * FROM documentation_indiv"
   ).to_df()
-schema_table_individu.head(2)
+schema_table_individu[["nom_variable", "code_modalite", "description_modalite"]].head(2)
 ```
 
 
@@ -172,7 +172,13 @@ __Exemple `R`__
 
 ```{python}
 #| echo: false
-duckdb.sql("SELECT * FROM documentation_indiv WHERE CONTAINS(description_variable, 'Catégorie')")
+duckdb.sql(\
+"""
+  SELECT nom_variable, code_modalite, description_modalite 
+  FROM documentation_indiv 
+  WHERE CONTAINS(description_variable, 'Catégorie')
+"""
+)
 ```
 
 Cette approche peut permettre de récupérer les modalités d'une variable.
@@ -192,8 +198,11 @@ __Exemple `R`__
 
 ```{python}
 #| echo: false
-duckdb.sql(
-  "SELECT * FROM documentation_indiv WHERE CONTAINS(code_modalite, 'Z')"
+duckdb.sql(\
+"""
+  SELECT nom_variable, code_modalite, description_modalite 
+  FROM documentation_indiv WHERE CONTAINS(code_modalite, 'Z')
+"""
 )
 ```
 
@@ -220,7 +229,7 @@ __Exemple `R`__
 ```{python}
 #| echo: false
 #| output: true
-duckdb.sql("SELECT * FROM table_logement LIMIT 5")
+duckdb.sql("SELECT COMMUNE, ARM, IRIS, TYPC, TYPL FROM table_logement LIMIT 5")
 ```
 
 Pour un échantillon aléatoire, la commande à utiliser est `USING SAMPLE`.
@@ -241,7 +250,7 @@ __Exemple `R`__
 ```{python}
 #| echo: false
 # Echantillon aléatoire
-duckdb.sql("SELECT * FROM table_logement USING SAMPLE 5")
+duckdb.sql("SELECT COMMUNE, ARM, IRIS, TYPC, TYPL FROM table_logement USING SAMPLE 5")
 ```
 
 # Sélectionner des observations ou des variables
@@ -332,7 +341,7 @@ duckdb.sql("SELECT * FROM table_individu WHERE DEPT IN ('11', '31', '34')")
 #| output: false
 liste_regions = ["1", "2", "3"]
 liste_regions_sql = ", ".join([f"'{dep}'" for dep in liste_regions])
-duckdb.sql(f"SELECT * FROM table_individu WHERE DEPT IN ({liste_regions_sql})")
+duckdb.sql(f"SELECT CANTVILLE, NUMMI, ACHLR, DEPT FROM table_individu WHERE DEPT IN ({liste_regions_sql})")
 ```
 
 Les filtres sur les observations peuvent être faits à partir de critères
@@ -352,7 +361,7 @@ __Exemple `R`__
 
 ```{python}
 #| echo: false
-query = "SELECT * FROM table_logement WHERE COMMUNE = '06088' and AEMM > 2020"
+query = "SELECT COMMUNE, ARM, IRIS, AEEM FROM table_logement WHERE COMMUNE = '06088' and AEMM > 2020"
 duckdb.sql(query)
 ```
 
