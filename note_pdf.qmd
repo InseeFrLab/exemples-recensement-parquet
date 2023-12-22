@@ -135,8 +135,10 @@ __Exemple `R`__
 schema_table_individu = duckdb.sql(
   "SELECT * FROM documentation_indiv"
   ).to_df()
-schema_table_individu[["nom_variable", "code_modalite", "description_modalite"]].head(2)
+schema_table_individu[["code_modalite", "description_modalite", "nom_variable"]].head(2)
 ```
+
+\pagebreak
 
 
 ```{python}
@@ -169,6 +171,8 @@ __Exemple `Python`__
 __Exemple `R`__ 
 
 {{< include snippets/3_select_documentation_r.qmd >}}
+
+\pagebreak
 
 ```{python}
 #| echo: false
@@ -333,7 +337,7 @@ __Exemple `R`__
 
 ```{python}
 #| echo: false
-duckdb.sql("SELECT * FROM table_individu WHERE DEPT IN ('11', '31', '34')")
+duckdb.sql("SELECT CANTVILLE, NUMMI, ACHLR, DEPT FROM table_individu WHERE DEPT IN ('11', '31', '34')")
 ```
 
 ```{python}
@@ -341,7 +345,7 @@ duckdb.sql("SELECT * FROM table_individu WHERE DEPT IN ('11', '31', '34')")
 #| output: false
 liste_regions = ["1", "2", "3"]
 liste_regions_sql = ", ".join([f"'{dep}'" for dep in liste_regions])
-duckdb.sql(f"SELECT CANTVILLE, NUMMI, ACHLR, DEPT FROM table_individu WHERE DEPT IN ({liste_regions_sql})")
+duckdb.sql(f"SELECT * FROM table_individu WHERE DEPT IN ({liste_regions_sql})")
 ```
 
 Les filtres sur les observations peuvent être faits à partir de critères
@@ -361,7 +365,7 @@ __Exemple `R`__
 
 ```{python}
 #| echo: false
-query = "SELECT COMMUNE, ARM, IRIS, AEEM FROM table_logement WHERE COMMUNE = '06088' and AEMM > 2020"
+query = "SELECT COMMUNE, ARM, IRIS, AEMM FROM table_logement WHERE COMMUNE = '06088' and AEMM > 2020"
 duckdb.sql(query)
 ```
 
