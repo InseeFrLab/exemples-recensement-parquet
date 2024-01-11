@@ -3,7 +3,7 @@ title: Guide d'utilisation des données du recensement de la population au forma
 jupyter: python3
 embed-resources: true
 code-annotations: true
-date: 2023-10-18
+date: 2023-12-22
 bibliography: reference.bib
 format:
   pdf:
@@ -42,7 +42,7 @@ L'ensemble des codes utilisés pour produire cette note
 est disponible sur le
 dépôt [`Github` InseeFrLab/exemples-recensement-parquet](https://github.com/InseeFrLab/exemples-recensement-parquet)
 au format [`Quarto Markdown`](https://quarto.org/).
-Une version plus plus ergonomique et présentant des éléments
+Une version plus ergonomique et présentant des éléments
 complémentaires (`DuckDB` par le biais d'`Observable` et `Quarto`, visualisations réactives),
 est disponible sur le blog
 du [réseau des _data scientists_ de la statistique publique](https://ssphub.netlify.app/post/parquetrp/).
@@ -74,8 +74,8 @@ est plus intéressant pour le traitement de celles-ci comme expliqué
 par @dondon-lamarche-2023. Les données au format `Parquet` sont mises à disposition sur 
 le site `data.gouv` aux adresses suivantes:
 
-* [Fichier détail individuel](https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1)
-* [Fichier détail logement](https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1)
+* [Fichier détail individus](https://www.data.gouv.fr/fr/datasets/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/)
+* [Fichier détail logement](https://www.data.gouv.fr/fr/datasets/recensement-de-la-population-fichiers-detail-logements-ordinaires-en-2020-1/)
 
 
 Ces fichiers peuvent être téléchargés par la biais de `Python`
@@ -135,20 +135,7 @@ __Exemple `R`__
 schema_table_individu = duckdb.sql(
   "SELECT * FROM documentation_indiv"
   ).to_df()
-schema_table_individu.head(2)
-```
-
-
-```{python}
-#| echo: false
-import pandas as pd
-ojs_define(
-  documentation_raw = schema_table_individu
-  )
-```
-
-```{ojs}
-documentation = transpose(documentation_raw)
+schema_table_individu[["code_modalite", "description_modalite", "nom_variable"]].head(2)
 ```
 
 \bigskip
@@ -170,9 +157,17 @@ __Exemple `R`__
 
 {{< include snippets/3_select_documentation_r.qmd >}}
 
+\pagebreak
+
 ```{python}
 #| echo: false
-duckdb.sql("SELECT * FROM documentation_indiv WHERE CONTAINS(description_variable, 'Catégorie')")
+duckdb.sql(\
+"""
+  SELECT nom_variable, code_modalite, description_modalite 
+  FROM documentation_indiv 
+  WHERE CONTAINS(description_variable, 'Catégorie')
+"""
+)
 ```
 
 Cette approche peut permettre de récupérer les modalités d'une variable.
@@ -192,8 +187,11 @@ __Exemple `R`__
 
 ```{python}
 #| echo: false
-duckdb.sql(
-  "SELECT * FROM documentation_indiv WHERE CONTAINS(code_modalite, 'Z')"
+duckdb.sql(\
+"""
+  SELECT nom_variable, code_modalite, description_modalite 
+  FROM documentation_indiv WHERE CONTAINS(code_modalite, 'Z')
+"""
 )
 ```
 
@@ -220,7 +218,7 @@ __Exemple `R`__
 ```{python}
 #| echo: false
 #| output: true
-duckdb.sql("SELECT * FROM table_logement LIMIT 5")
+duckdb.sql("SELECT COMMUNE, ARM, IRIS, TYPC, TYPL FROM table_logement LIMIT 5")
 ```
 
 Pour un échantillon aléatoire, la commande à utiliser est `USING SAMPLE`.
@@ -241,7 +239,7 @@ __Exemple `R`__
 ```{python}
 #| echo: false
 # Echantillon aléatoire
-duckdb.sql("SELECT * FROM table_logement USING SAMPLE 5")
+duckdb.sql("SELECT COMMUNE, ARM, IRIS, TYPC, TYPL FROM table_logement USING SAMPLE 5")
 ```
 
 # Sélectionner des observations ou des variables
@@ -324,7 +322,7 @@ __Exemple `R`__
 
 ```{python}
 #| echo: false
-duckdb.sql("SELECT * FROM table_individu WHERE DEPT IN ('11', '31', '34')")
+duckdb.sql("SELECT CANTVILLE, NUMMI, ACHLR, DEPT FROM table_individu WHERE DEPT IN ('11', '31', '34')")
 ```
 
 ```{python}
@@ -352,7 +350,7 @@ __Exemple `R`__
 
 ```{python}
 #| echo: false
-query = "SELECT * FROM table_logement WHERE COMMUNE = '06088' and AEMM > 2020"
+query = "SELECT COMMUNE, ARM, IRIS, AEMM FROM table_logement WHERE COMMUNE = '06088' and AEMM > 2020"
 duckdb.sql(query)
 ```
 
