@@ -138,21 +138,6 @@ schema_table_individu = duckdb.sql(
 schema_table_individu[["code_modalite", "description_modalite", "nom_variable"]].head(2)
 ```
 
-\pagebreak
-
-
-```{python}
-#| echo: false
-import pandas as pd
-ojs_define(
-  documentation_raw = schema_table_individu
-  )
-```
-
-```{ojs}
-documentation = transpose(documentation_raw)
-```
-
 \bigskip
 
 Pour découvrir les informations présentes dans la base,
